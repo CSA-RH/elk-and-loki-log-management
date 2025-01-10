@@ -1,0 +1,23 @@
+apiVersion: "logging.openshift.io/v1"
+kind: "ClusterLogForwarder"
+metadata:
+  name: "instance"
+  namespace: "openshift-logging"
+spec:
+  outputs:
+    - name: "loki-output"
+      type: "loki"
+      url: "http://loki-stack.logging.svc:3100/loki/api/v1/push"
+    - name: "elasticsearch-output"
+      type: "elasticsearch"
+      url: "https://elasticsearch.logging.svc:9200"
+      secret:
+        name: "elasticsearch-credentials"
+  pipelines:
+    - name: "all-logs"
+      inputRefs:
+        - "application"
+        - "infrastructure"
+      outputRefs:
+        - "loki-output"
+        - "elasticsearch-output"
